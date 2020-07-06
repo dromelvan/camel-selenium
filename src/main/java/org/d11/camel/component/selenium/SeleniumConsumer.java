@@ -13,13 +13,17 @@ public class SeleniumConsumer extends DefaultConsumer {
     protected void doStart() throws Exception {
         super.doStart();        
         
+        Exchange exchange = getEndpoint().createExchange();
         SeleniumDriver seleniumDriver = new SeleniumDriver();
 
-        String url = getEndpoint().getEndpointUri().replace("selenium://","");
-        seleniumDriver.get(url);
-        
-        Exchange exchange = getEndpoint().createExchange();
-        exchange.getMessage().setBody(seleniumDriver.getPageSource());
+        try {
+            String url = getEndpoint().getEndpointUri().replace("selenium://","");
+            seleniumDriver.get(url);
+                    
+            exchange.getMessage().setBody(seleniumDriver.getPageSource());
+        } finally {
+            seleniumDriver.quit();
+        }            
         
         getProcessor().process(exchange);
     }

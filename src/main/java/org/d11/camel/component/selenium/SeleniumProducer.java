@@ -12,10 +12,14 @@ public class SeleniumProducer extends DefaultProducer {
     public void process(Exchange exchange) throws Exception {        
         SeleniumDriver seleniumDriver = new SeleniumDriver();       
         
-        String url = getEndpoint().getEndpointUri().replace("selenium://","");
-        seleniumDriver.get(url);
+        try {
+            String url = getEndpoint().getEndpointUri().replace("selenium://","");
+            seleniumDriver.get(url);
         
-        exchange.getMessage().setBody(seleniumDriver.getPageSource());
+            exchange.getMessage().setBody(seleniumDriver.getPageSource());
+        } finally {
+            seleniumDriver.quit();
+        }
     }
 
 }
